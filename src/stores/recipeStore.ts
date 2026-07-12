@@ -1,44 +1,189 @@
-import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { defineStore } from 'pinia'
+
 import type { Recipe } from '@/types/Recipe'
-import { demoRecipe } from '@/data/demoRecipe'
+import { createEmptyRecipe } from '@/factories/recipeFactory'
+import { recipeRepository } from '@/repositories/recipeRepository'
 
-const STORAGE_KEY = 'recipe-generator-current-recipe'
+const getErrorMessage = (
+  error: unknown,
+  defaultMessage: string,
+): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
 
-const cloneRecipe = (recipe: Recipe): Recipe => {
-  return JSON.parse(JSON.stringify(recipe)) as Recipe
+  return defaultMessage
 }
 
-const getInitialRecipe = (): Recipe => {
-  const savedRecipe = localStorage.getItem(STORAGE_KEY)
-
-  if (!savedRecipe) {
-    return cloneRecipe(demoRecipe)
-  }
-
-  try {
-    return JSON.parse(savedRecipe) as Recipe
-  } catch {
-    localStorage.removeItem(STORAGE_KEY)
-    return cloneRecipe(demoRecipe)
-  }
+const sortRecipes = (recipes: Recipe[]): Recipe[] => {
+  return [...recipes].sort((recipeA, recipeB) => {
+    return (
+      new Date(recipeB.updatedAt).getTime()
+      - new Date(recipeA.updatedAt).getTime()
+    )
+  })
 }
 
 export const useRecipeStore = defineStore('recipe', () => {
-  const currentRecipe = ref<Recipe>(getInitialRecipe())
+  const recipes = ref<Recipe[]>([])
 
-  const saveRecipe = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentRecipe.value))
+  const currentRecipe = ref<Recipe | null>(null)
+
+  const isLoading = ref(false)
+
+  const error = ref<string | null>(null)
+
+  const loadRecipes = async (): Promise<void> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      recipes.value = await recipeRepository.getAll()
+    } catch (exception) {
+      error.value = getErrorMessage(
+        exception,
+        'Impossible de charger les recettes.',
+      )
+    } finally {
+      isLoading.value = false
+    }
   }
 
-  const resetRecipe = () => {
-    currentRecipe.value = cloneRecipe(demoRecipe)
-    saveRecipe()
+  const createRecipe = (): void => {
+    currentRecipe.value = createEmptyRecipe()
+    error.value = null
+  }
+
+  const loadRecipe = async (
+    recipeId: string,
+  ): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const recipe = await recipeRepository.getById(recipeId)
+
+      if (!recipe) {
+        currentRecipe.value = null
+        error.value = 'Cette recette est introuvable.'
+
+        return false
+      }
+
+      /*
+       * On édite une copie.
+       *
+       * Cela évite que les modifications du formulaire changent
+       * directement la recette présente dans la liste.
+       */
+      currentRecipe.value = structuredClone(recipe)
+
+      return true
+    } catch (exception) {
+      currentRecipe.value = null
+
+      error.value = getErrorMessage(
+        exception,
+        'Impossible de charger cette recette.',
+      )
+
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const saveCurrentRecipe = async (): Promise<Recipe | null> => {
+    if (!currentRecipe.value) {
+      error.value = 'Aucune recette à enregistrer.'
+
+      return null
+    }
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const savedRecipe = await recipeRepository.save(
+        currentRecipe.value,
+      )
+
+      currentRecipe.value = structuredClone(savedRecipe)
+
+      const recipeIndex = recipes.value.findIndex(
+        (recipe: Recipe) => recipe.id === savedRecipe.id,
+      )
+
+      if (recipeIndex === -1) {
+        recipes.value.push(savedRecipe)
+      } else {
+        recipes.value[recipeIndex] = savedRecipe
+      }
+
+      recipes.value = sortRecipes(recipes.value)
+
+      return savedRecipe
+    } catch (exception) {
+      error.value = getErrorMessage(
+        exception,
+        'Impossible d’enregistrer la recette.',
+      )
+
+      console.error('Impossible d’enregistrer la recette.', exception)
+
+      return null
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const deleteRecipe = async (
+    recipeId: string,
+  ): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await recipeRepository.delete(recipeId)
+
+      recipes.value = recipes.value.filter(
+        (recipe: Recipe) => recipe.id !== recipeId,
+      )
+
+      if (currentRecipe.value?.id === recipeId) {
+        currentRecipe.value = null
+      }
+
+      return true
+    } catch (exception) {
+      error.value = getErrorMessage(
+        exception,
+        'Impossible de supprimer la recette.',
+      )
+
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const clearCurrentRecipe = (): void => {
+    currentRecipe.value = null
+    error.value = null
   }
 
   return {
+    recipes,
     currentRecipe,
-    saveRecipe,
-    resetRecipe,
+    isLoading,
+    error,
+
+    loadRecipes,
+    createRecipe,
+    loadRecipe,
+    saveCurrentRecipe,
+    deleteRecipe,
+    clearCurrentRecipe,
   }
 })
