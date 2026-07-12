@@ -1,6 +1,8 @@
 import type { Recipe } from '@/types/Recipe'
 import gateauAuChocolatImage from '@/assets/images/gateau_au_chocolat.jpg'
 
+const demoDate = new Date().toISOString()
+
 export const demoRecipe: Recipe = {
   id: 'demo-moelleux-chocolat',
   coverImage: gateauAuChocolatImage,
@@ -58,4 +60,6 @@ export const demoRecipe: Recipe = {
       description: 'Verser dans un moule et cuire environ 20 minutes à 180°C.',
     },
   ],
+  createdAt: demoDate,
+  updatedAt: demoDate,
 }

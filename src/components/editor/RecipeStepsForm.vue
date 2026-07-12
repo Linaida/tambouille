@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RecipeStep } from '@/types/Recipe'
+import ImageUploadField from '@/components/editor/ImageUploadField.vue'
 
 const steps = defineModel<RecipeStep[]>('steps', {
     required: true,
@@ -47,6 +48,12 @@ const removeStep = (stepId: string) => {
                 <label>Description</label>
                 <textarea v-model="step.description" rows="3" placeholder="Décris simplement cette étape." />
             </div>
+            <ImageUploadField
+              v-model:image="step.image"
+              label="Image de l’étape — optionnelle"
+              :preview-alt="step.title || `Étape ${index + 1}`"
+            />
+
         </div>
     </section>
 </template>

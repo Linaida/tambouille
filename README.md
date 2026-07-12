@@ -1,12 +1,14 @@
-# tambouille
+# Présentation
 
-This template should help get you started developing with Vue 3 in Vite.
+Tambouille est un outil permettant de créer des recettes de cuisine simples, facilement imprimable et exportables en différents formats.
 
-## Recommended IDE Setup
+# Développement
+
+## IDE Recommandé
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Recommended Browser Setup
+## Extensions recommandées
 
 - Chromium-based browsers (Chrome, Edge, Brave, etc.):
   - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
@@ -15,27 +17,26 @@ This template should help get you started developing with Vue 3 in Vite.
   - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
   - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
-## Type Support for `.vue` Imports in TS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-## Customize configuration
+# Installation du projet
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Pré-requis
+Version de node : **>=24.12**  
+Gestionnaire de dépendances : **pnpm** 
 
-## Project Setup
-
+## Installer les dépendances
 ```sh
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+### Lancer le serveur de dev
 
 ```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Compiler pour la production
 
 ```sh
 pnpm build
@@ -46,3 +47,57 @@ pnpm build
 ```sh
 pnpm lint
 ```
+
+## Type Support for `.vue` Imports in TS
+
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+# Description du projet
+
+## Structure 
+
+```
+src/
+├── components/
+│   ├── editor/
+│   └── recipe/
+│
+├── database/
+│   └── recipeDatabase.ts
+│
+├── repositories/
+│   └── recipeRepository.ts
+│
+├── stores/
+│   └── recipeStore.ts
+│
+├── types/
+│   └── Recipe.ts
+│
+├── views/
+│   ├── RecipeListView.vue
+│   ├── RecipeView.vue
+│   └── EditRecipeView.vue
+│
+└── router/
+    └── index.ts
+```
+
+### Fonctionnement du stockage 
+
+recipeDatabase.ts
+→ configuration IndexedDB
+
+recipeRepository.ts
+→ ajouter, lire, modifier et supprimer des recettes
+
+recipeStore.ts
+→ état utilisé par Vue
+
+Views
+→ affichage des pages

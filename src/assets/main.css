@@ -431,3 +431,13 @@ button {
   font-size: 14px;
   color: #9c2f24;
 }
+
+.step-image {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  max-height: 280px;
+  margin-top: 12px;
+  object-fit: contain;
+  border-radius: 12px;
+}
