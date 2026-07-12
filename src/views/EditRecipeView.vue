@@ -59,8 +59,11 @@ const validateRecipe = async () => {
     return
   }
 
-  router.push({
-    name: 'home',
+  await router.push({
+    name: 'recipe-show',
+    params: {
+      id: savedRecipe.id,
+    },
   })
 }
 

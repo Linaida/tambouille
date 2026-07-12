@@ -6,6 +6,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
+  view: [recipeId: string]
   edit: [recipeId: string]
   remove: [recipe: Recipe]
 }>()
@@ -14,16 +15,9 @@ const emit = defineEmits<{
 <template>
   <article class="recipe-card">
     <div class="recipe-card-image">
-      <img
-        v-if="recipe.coverImage"
-        :src="recipe.coverImage"
-        :alt="recipe.title"
-      />
+      <img v-if="recipe.coverImage" :src="recipe.coverImage" :alt="recipe.title" />
 
-      <div
-        v-else
-        class="recipe-card-image-placeholder"
-      >
+      <div v-else class="recipe-card-image-placeholder">
         Aucune image
       </div>
     </div>
@@ -33,10 +27,7 @@ const emit = defineEmits<{
         {{ recipe.title || 'Recette sans titre' }}
       </h2>
 
-      <p
-        v-if="recipe.description"
-        class="recipe-card-description"
-      >
+      <p v-if="recipe.description" class="recipe-card-description">
         {{ recipe.description }}
       </p>
 
@@ -56,19 +47,14 @@ const emit = defineEmits<{
     </div>
 
     <div class="recipe-card-actions">
-      <button
-        type="button"
-        class="secondary-button"
-        @click="emit('edit', recipe.id)"
-      >
+      <button type="button" @click="emit('view', recipe.id)">
+        Voir
+      </button>
+      <button type="button" class="secondary-button" @click="emit('edit', recipe.id)">
         Modifier
       </button>
 
-      <button
-        type="button"
-        class="delete-button"
-        @click="emit('remove', recipe)"
-      >
+      <button type="button" class="delete-button" @click="emit('remove', recipe)">
         Supprimer
       </button>
     </div>

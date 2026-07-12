@@ -27,6 +27,15 @@ const createRecipe = () => {
   })
 }
 
+const viewRecipe = (recipeId: string): void => {
+  router.push({
+    name: 'recipe-show',
+    params: {
+      id: recipeId,
+    },
+  })
+}
+
 const editRecipe = (recipeId: string) => {
   router.push({
     name: 'recipe-edit',
@@ -110,6 +119,7 @@ const removeRecipe = async (recipe: Recipe) => {
         v-for="recipe in recipes"
         :key="recipe.id"
         :recipe="recipe"
+        @view="viewRecipe"
         @edit="editRecipe"
         @remove="removeRecipe"
       />
