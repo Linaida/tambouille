@@ -1,0 +1,65 @@
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #2d2a26;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: white;
+  color: #2d2a26;
+  text-decoration: none;
+  border: 1px solid #ddd5cc;
+  cursor: pointer;
+}
+
+.small-button {
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 11px;
+  background: #2d2a26;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 36px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.danger-button {
+  background: #f5e5e2;
+  color: #9c2f24;
+}
+
+.danger-button:hover {
+  background: #efd0cb;
+}
+
+.delete-button {
+  border: 1px solid #e2bab4;
+  background: #fff;
+  color: #9c2f24;
+}
+
+.delete-button:hover {
+  background: #f8e7e4;
+}
