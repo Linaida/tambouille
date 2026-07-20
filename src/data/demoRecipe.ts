@@ -16,21 +16,25 @@ export const demoRecipe: Recipe = {
       id: '1',
       name: 'Chocolat noir',
       quantity: '200 g',
+      icon: 'twemoji:chocolate-bar',
     },
     {
       id: '2',
       name: 'Beurre',
       quantity: '100 g',
+      icon: 'twemoji:butter',
     },
     {
       id: '3',
       name: 'Œufs',
       quantity: '4',
+      icon: 'twemoji:egg',
     },
     {
       id: '4',
       name: 'Sucre',
       quantity: '120 g',
+      icon: 'twemoji:sugar',
     },
     {
       id: '5',

@@ -2,7 +2,7 @@ export type RecipeIngredient = {
   id: string
   name: string
   quantity: string
-  image?: string
+  icon?: string
 }
 
 export type RecipeStep = {

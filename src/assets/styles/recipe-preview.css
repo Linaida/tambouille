@@ -73,23 +73,25 @@
 }
 
 .ingredients-list li {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px 90px 1fr;
   gap: 12px;
+  align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
 
-.ingredient-quantity {
-  min-width: 90px;
-  font-weight: bold;
+.ingredient-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 24px;
 }
 
-.ingredient-image {
-  width: 42px;
-  height: 42px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-left: auto;
+.ingredient-quantity {
+  font-weight: bold;
 }
 
 .steps-list {
@@ -113,6 +115,8 @@
   object-fit: contain;
   border-radius: 12px;
 }
+
+
 
 @media (max-width: 700px) {
   .recipe-header {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RecipeIngredient } from '@/types/Recipe'
+import { Icon } from '@iconify/vue'
 
 defineProps<{
   ingredients: RecipeIngredient[]
@@ -12,15 +13,17 @@ defineProps<{
 
     <ul class="ingredients-list">
       <li v-for="ingredient in ingredients" :key="ingredient.id">
-        <span class="ingredient-quantity">{{ ingredient.quantity }}</span>
-        <span>{{ ingredient.name }}</span>
+        <span class="ingredient-icon">
+          <Icon v-if="ingredient.icon" :icon="ingredient.icon" />
+        </span>
 
-        <img
-          v-if="ingredient.image"
-          :src="ingredient.image"
-          :alt="ingredient.name"
-          class="ingredient-image"
-        />
+        <span class="ingredient-quantity">
+          {{ ingredient.quantity }}
+        </span>
+
+        <span>
+          {{ ingredient.name }}
+        </span>
       </li>
     </ul>
   </section>

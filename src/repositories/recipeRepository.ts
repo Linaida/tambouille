@@ -24,6 +24,15 @@ export const recipeRepository = {
 
     return recipeToSave
   },
+  async saveMany(recipes: Recipe[]): Promise<void> {
+    const recipesToSave = recipes.map((recipe) => ({
+      ...recipe,
+      updatedAt: recipe.updatedAt || new Date().toISOString(),
+      createdAt: recipe.createdAt || new Date().toISOString(),
+    }))
+
+    await recipeDatabase.recipes.bulkPut(recipesToSave)
+  },
 
   async delete(id: string): Promise<void> {
     await recipeDatabase.recipes.delete(id)

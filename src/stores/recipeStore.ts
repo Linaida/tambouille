@@ -5,10 +5,7 @@ import type { Recipe } from '@/types/Recipe'
 import { createEmptyRecipe } from '@/factories/recipeFactory'
 import { recipeRepository } from '@/repositories/recipeRepository'
 
-const getErrorMessage = (
-  error: unknown,
-  defaultMessage: string,
-): string => {
+const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (error instanceof Error) {
     return error.message
   }
@@ -18,10 +15,7 @@ const getErrorMessage = (
 
 const sortRecipes = (recipes: Recipe[]): Recipe[] => {
   return [...recipes].sort((recipeA, recipeB) => {
-    return (
-      new Date(recipeB.updatedAt).getTime()
-      - new Date(recipeA.updatedAt).getTime()
-    )
+    return new Date(recipeB.updatedAt).getTime() - new Date(recipeA.updatedAt).getTime()
   })
 }
 
@@ -41,10 +35,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     try {
       recipes.value = await recipeRepository.getAll()
     } catch (exception) {
-      error.value = getErrorMessage(
-        exception,
-        'Impossible de charger les recettes.',
-      )
+      error.value = getErrorMessage(exception, 'Impossible de charger les recettes.')
     } finally {
       isLoading.value = false
     }
@@ -55,9 +46,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     error.value = null
   }
 
-  const loadRecipe = async (
-    recipeId: string,
-  ): Promise<boolean> => {
+  const loadRecipe = async (recipeId: string): Promise<boolean> => {
     isLoading.value = true
     error.value = null
 
@@ -83,10 +72,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     } catch (exception) {
       currentRecipe.value = null
 
-      error.value = getErrorMessage(
-        exception,
-        'Impossible de charger cette recette.',
-      )
+      error.value = getErrorMessage(exception, 'Impossible de charger cette recette.')
 
       return false
     } finally {
@@ -105,15 +91,11 @@ export const useRecipeStore = defineStore('recipe', () => {
     error.value = null
 
     try {
-      const savedRecipe = await recipeRepository.save(
-        currentRecipe.value,
-      )
+      const savedRecipe = await recipeRepository.save(currentRecipe.value)
 
       currentRecipe.value = structuredClone(savedRecipe)
 
-      const recipeIndex = recipes.value.findIndex(
-        (recipe: Recipe) => recipe.id === savedRecipe.id,
-      )
+      const recipeIndex = recipes.value.findIndex((recipe: Recipe) => recipe.id === savedRecipe.id)
 
       if (recipeIndex === -1) {
         recipes.value.push(savedRecipe)
@@ -125,10 +107,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return savedRecipe
     } catch (exception) {
-      error.value = getErrorMessage(
-        exception,
-        'Impossible d’enregistrer la recette.',
-      )
+      error.value = getErrorMessage(exception, 'Impossible d’enregistrer la recette.')
 
       console.error('Impossible d’enregistrer la recette.', exception)
 
@@ -138,18 +117,14 @@ export const useRecipeStore = defineStore('recipe', () => {
     }
   }
 
-  const deleteRecipe = async (
-    recipeId: string,
-  ): Promise<boolean> => {
+  const deleteRecipe = async (recipeId: string): Promise<boolean> => {
     isLoading.value = true
     error.value = null
 
     try {
       await recipeRepository.delete(recipeId)
 
-      recipes.value = recipes.value.filter(
-        (recipe: Recipe) => recipe.id !== recipeId,
-      )
+      recipes.value = recipes.value.filter((recipe: Recipe) => recipe.id !== recipeId)
 
       if (currentRecipe.value?.id === recipeId) {
         currentRecipe.value = null
@@ -157,10 +132,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
       return true
     } catch (exception) {
-      error.value = getErrorMessage(
-        exception,
-        'Impossible de supprimer la recette.',
-      )
+      error.value = getErrorMessage(exception, 'Impossible de supprimer la recette.')
 
       return false
     } finally {
@@ -171,6 +143,30 @@ export const useRecipeStore = defineStore('recipe', () => {
   const clearCurrentRecipe = (): void => {
     currentRecipe.value = null
     error.value = null
+  }
+
+  const exportRecipes = async (): Promise<Recipe[]> => {
+    await loadRecipes()
+
+    return recipes.value
+  }
+
+  const importRecipes = async (recipesToImport: Recipe[]): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await recipeRepository.saveMany(recipesToImport)
+      await loadRecipes()
+
+      return true
+    } catch (exception) {
+      error.value = getErrorMessage(exception, 'Impossible d’importer les recettes.')
+
+      return false
+    } finally {
+      isLoading.value = false
+    }
   }
 
   return {
@@ -185,5 +181,8 @@ export const useRecipeStore = defineStore('recipe', () => {
     saveCurrentRecipe,
     deleteRecipe,
     clearCurrentRecipe,
+
+    exportRecipes,
+    importRecipes,
   }
 })

@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import { useRecipeStore } from '@/stores/recipeStore'
 import type { Recipe } from '@/types/Recipe'
+
+import {
+  downloadRecipesBackup,
+  readRecipesBackupFile,
+} from '@/utils/recipeBackup'
 
 const router = useRouter()
 
@@ -58,6 +63,45 @@ const removeRecipe = async (recipe: Recipe) => {
 
   await recipeStore.deleteRecipe(recipe.id)
 }
+
+const backupInput = ref<HTMLInputElement | null>(null)
+
+const exportAllRecipes = async (): Promise<void> => {
+  const recipesToExport = await recipeStore.exportRecipes()
+
+  downloadRecipesBackup(recipesToExport)
+}
+
+const openImportFilePicker = (): void => {
+  backupInput.value?.click()
+}
+
+const importRecipesBackup = async (event: Event): Promise<void> => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  try {
+    const recipesToImport = await readRecipesBackupFile(file)
+
+    const confirmed = window.confirm(
+      `Importer ${recipesToImport.length} recette(s) ?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    await recipeStore.importRecipes(recipesToImport)
+  } catch {
+    window.alert('Le fichier sélectionné est invalide.')
+  } finally {
+    input.value = ''
+  }
+}
 </script>
 
 <template>
@@ -71,58 +115,45 @@ const removeRecipe = async (recipe: Recipe) => {
         </p>
       </div>
 
-      <button
-        type="button"
-        @click="createRecipe"
-      >
+      <button type="button" class="secondary-button" @click="exportAllRecipes">
+        Exporter
+      </button>
+
+      <button type="button" class="secondary-button" @click="openImportFilePicker">
+        Importer
+      </button>
+
+      <button type="button" @click="createRecipe">
         Nouvelle recette
       </button>
+
+      <input ref="backupInput" type="file" accept="application/json" class="visually-hidden"
+        @change="importRecipesBackup" />
     </header>
 
-    <p
-      v-if="error"
-      class="form-error"
-    >
+    <p v-if="error" class="form-error">
       {{ error }}
     </p>
 
-    <p
-      v-if="isLoading && recipes.length === 0"
-      class="recipes-loading"
-    >
+    <p v-if="isLoading && recipes.length === 0" class="recipes-loading">
       Chargement des recettes...
     </p>
 
-    <section
-      v-else-if="recipes.length === 0"
-      class="recipes-empty"
-    >
+    <section v-else-if="recipes.length === 0" class="recipes-empty">
       <h2>Aucune recette</h2>
 
       <p>
         Commencez par créer votre première recette.
       </p>
 
-      <button
-        type="button"
-        @click="createRecipe"
-      >
+      <button type="button" @click="createRecipe">
         Créer une recette
       </button>
     </section>
 
-    <section
-      v-else
-      class="recipes-grid"
-    >
-      <RecipeCard
-        v-for="recipe in recipes"
-        :key="recipe.id"
-        :recipe="recipe"
-        @view="viewRecipe"
-        @edit="editRecipe"
-        @remove="removeRecipe"
-      />
+    <section v-else class="recipes-grid">
+      <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" @view="viewRecipe" @edit="editRecipe"
+        @remove="removeRecipe" />
     </section>
   </main>
 </template>
