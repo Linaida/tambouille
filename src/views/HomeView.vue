@@ -114,19 +114,19 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
           Créez, modifiez et conservez vos recettes.
         </p>
       </div>
+      <div class="recipes-page-header-actions">
+        <button type="button" class="secondary-button" @click="exportAllRecipes">
+          Exporter
+        </button>
 
-      <button type="button" class="secondary-button" @click="exportAllRecipes">
-        Exporter
-      </button>
+        <button type="button" class="secondary-button" @click="openImportFilePicker">
+          Importer
+        </button>
 
-      <button type="button" class="secondary-button" @click="openImportFilePicker">
-        Importer
-      </button>
-
-      <button type="button" @click="createRecipe">
-        Nouvelle recette
-      </button>
-
+        <button type="button" @click="createRecipe">
+          Nouvelle recette
+        </button>
+      </div>
       <input ref="backupInput" type="file" accept="application/json" class="visually-hidden"
         @change="importRecipesBackup" />
     </header>
@@ -157,3 +157,12 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
     </section>
   </main>
 </template>
+
+<style lang="css" scoped>
+.recipes-page-header-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+</style>
