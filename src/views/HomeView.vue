@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import { useRecipeStore } from '@/stores/recipeStore'
+import { useNotificationStore } from '@/stores/notificationStore'
 import type { Recipe } from '@/types/Recipe'
 
 import {
@@ -15,6 +16,7 @@ import {
 const router = useRouter()
 
 const recipeStore = useRecipeStore()
+const notificationStore = useNotificationStore()
 
 const {
   recipes,
@@ -58,6 +60,8 @@ const duplicateRecipe = async (recipeId: string): Promise<void> => {
     return
   }
 
+  notificationStore.showNotification('Recette dupliquée.')
+
   await router.push({
     name: 'recipe-edit',
     params: {
@@ -77,12 +81,26 @@ const removeRecipe = async (recipe: Recipe) => {
     return
   }
 
-  await recipeStore.deleteRecipe(recipe.id)
+  const deleted = await recipeStore.deleteRecipe(recipe.id)
+
+  if (deleted) {
+    notificationStore.showNotification('Recette supprimée.')
+  }
 }
 
 const backupInput = ref<HTMLInputElement | null>(null)
 
 const searchQuery = ref('')
+
+const selectedTag = ref<string | null>(null)
+
+const availableTags = computed(() => {
+  const tags = recipes.value.flatMap((recipe) => recipe.tags ?? [])
+
+  return [...new Set(tags)].sort((tagA, tagB) => {
+    return tagA.localeCompare(tagB)
+  })
+})
 
 const normalizeSearchText = (value: string): string => {
   return value
@@ -97,14 +115,23 @@ const normalizedSearchQuery = computed(() => {
 })
 
 const filteredRecipes = computed(() => {
-  if (!normalizedSearchQuery.value) {
-    return recipes.value
-  }
-
   return recipes.value.filter((recipe) => {
+    const matchesTag = selectedTag.value
+      ? recipe.tags?.includes(selectedTag.value)
+      : true
+
+    if (!matchesTag) {
+      return false
+    }
+
+    if (!normalizedSearchQuery.value) {
+      return true
+    }
+
     const searchableText = [
       recipe.title,
       recipe.description,
+      ...(recipe.tags ?? []),
       ...recipe.ingredients.map((ingredient) => ingredient.name),
     ]
       .filter(Boolean)
@@ -115,9 +142,17 @@ const filteredRecipes = computed(() => {
     )
   })
 })
-
 const clearSearch = (): void => {
   searchQuery.value = ''
+}
+
+const selectTag = (tag: string | null): void => {
+  selectedTag.value = tag
+}
+
+const clearFilters = (): void => {
+  searchQuery.value = ''
+  selectedTag.value = null
 }
 
 const exportAllRecipes = async (): Promise<void> => {
@@ -150,8 +185,11 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
     }
 
     await recipeStore.importRecipes(recipesToImport)
+    notificationStore.showNotification(
+      `Import terminé : ${recipesToImport.length} recette(s) importée(s) !`,
+    )
   } catch {
-    window.alert('Le fichier sélectionné est invalide.')
+    notificationStore.showNotification('Le fichier sélectionné est invalide.', 'error')
   } finally {
     input.value = ''
   }
@@ -198,9 +236,26 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
         </button>
       </div>
 
-      <p v-if="normalizedSearchQuery" class="recipes-search-results">
+      <p v-if="normalizedSearchQuery || selectedTag" class="recipes-search-results">
         {{ filteredRecipes.length }} résultat(s) trouvé(s)
       </p>
+    </section>
+    <section v-if="availableTags.length > 0" class="recipes-tag-filter no-print">
+      <span class="recipes-tag-filter-label">
+        Filtrer par tag
+      </span>
+
+      <div class="recipes-tag-filter-list">
+        <button type="button" class="recipes-tag-filter-option" :class="{ 'is-selected': selectedTag === null }"
+          @click="selectTag(null)">
+          Tous
+        </button>
+
+        <button v-for="tag in availableTags" :key="tag" type="button" class="recipes-tag-filter-option"
+          :class="{ 'is-selected': selectedTag === tag }" @click="selectTag(tag)">
+          {{ tag }}
+        </button>
+      </div>
     </section>
 
     <p v-if="error" class="form-error">
@@ -227,33 +282,18 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
       <h2>Aucun résultat</h2>
 
       <p>
-        Aucune recette ne correspond à votre recherche.
+        Aucune recette ne correspond à votre recherche ou au tag sélectionné.
       </p>
 
-      <button type="button" class="secondary-button" @click="clearSearch">
-        Effacer la recherche
+      <button type="button" class="secondary-button" @click="clearFilters">
+        Effacer les filtres
       </button>
     </section>
 
     <section v-else class="recipes-grid">
-      <RecipeCard
-        v-for="recipe in filteredRecipes"
-        :key="recipe.id"
-        :recipe="recipe"
-        @view="viewRecipe"
-        @edit="editRecipe"
-        @remove="removeRecipe"
-        @duplicate="duplicateRecipe"
-      />
+      <RecipeCard v-for="recipe in filteredRecipes" :key="recipe.id" :recipe="recipe" @view="viewRecipe"
+        @edit="editRecipe" @remove="removeRecipe" @duplicate="duplicateRecipe" />
     </section>
   </main>
 </template>
 
-<style lang="css" scoped>
-.recipes-page-header-actions {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-</style>

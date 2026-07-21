@@ -1,0 +1,18 @@
+export const recipeTags = [
+  'Entrée',
+  'Plat',
+  'Dessert',
+  'Apéritif',
+  'Petit-déjeuner',
+  'Goûter',
+  'Rapide',
+  'Batch cooking',
+  'Congélation',
+  'Bébé',
+  'Végétarien',
+  'Viande',
+  'Poisson',
+  'Économique',
+  'Four',
+  'Sans cuisson',
+]

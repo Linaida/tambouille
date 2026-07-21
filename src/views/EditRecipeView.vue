@@ -20,9 +20,12 @@ import RecipeIngredientsForm from '@/components/editor/RecipeIngredientsForm.vue
 import RecipeStepsForm from '@/components/editor/RecipeStepsForm.vue'
 
 import { useRecipeStore } from '@/stores/recipeStore'
+import { useNotificationStore } from '@/stores/notificationStore'
+
 import type { Recipe } from '@/types/Recipe'
 
 const recipeStore = useRecipeStore()
+const notificationStore = useNotificationStore()
 
 const {
   currentRecipe,
@@ -77,6 +80,14 @@ const normalizeRecipeBeforeSave = (): void => {
   currentRecipe.value.description = currentRecipe.value.description?.trim()
   currentRecipe.value.preparationTime = currentRecipe.value.preparationTime?.trim()
   currentRecipe.value.cookingTime = currentRecipe.value.cookingTime?.trim()
+
+  currentRecipe.value.tags = [
+    ...new Set(
+      (currentRecipe.value.tags ?? [])
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    ),
+  ]
 
   currentRecipe.value.ingredients = currentRecipe.value.ingredients.map(
     (ingredient) => ({
@@ -224,6 +235,8 @@ const validateRecipe = async (): Promise<void> => {
     return
   }
 
+  notificationStore.showNotification('Recette enregistrée avec succès !')
+
   updateInitialSnapshot()
   isLeavingAfterSave.value = true
 
@@ -264,77 +277,44 @@ onBeforeUnmount(() => {
 <template>
   <main class="editor-page">
     <div class="toolbar no-print">
-      <button
-        type="button"
-        class="secondary-button"
-        :disabled="isLoading || !currentRecipe"
-        @click="router.push({ name: 'home' })"
-      >
+      <button type="button" class="secondary-button" :disabled="isLoading || !currentRecipe"
+        @click="router.push({ name: 'home' })">
         Retour à l’accueil
       </button>
-      <button
-        type="button"
-        class="secondary-button"
-        :disabled="isLoading || !currentRecipe"
-        @click="resetRecipe"
-      >
+      <button type="button" class="secondary-button" :disabled="isLoading || !currentRecipe" @click="resetRecipe">
         Annuler les modifications
       </button>
 
-      <button
-        type="button"
-        :disabled="isLoading || !currentRecipe"
-        @click="validateRecipe"
-      >
+      <button type="button" :disabled="isLoading || !currentRecipe" @click="validateRecipe">
         {{ isLoading ? 'Enregistrement...' : 'Valider' }}
       </button>
     </div>
 
-    <p
-      v-if="hasUnsavedChanges"
-      class="editor-unsaved-warning no-print"
-    >
+    <p v-if="hasUnsavedChanges" class="editor-unsaved-warning no-print">
       Modifications non enregistrées
     </p>
 
-    <p
-      v-if="isLoading && !currentRecipe"
-      class="recipes-loading"
-    >
+    <p v-if="isLoading && !currentRecipe" class="recipes-loading">
       Chargement...
     </p>
 
-    <p
-      v-if="displayedError"
-      class="form-error"
-    >
+    <p v-if="displayedError" class="form-error">
       {{ displayedError }}
     </p>
 
-    <div
-      v-if="currentRecipe"
-      class="editor-layout"
-    >
+    <div v-if="currentRecipe" class="editor-layout">
       <section class="editor-panel no-print">
         <h1>Modifier la recette</h1>
 
-        <RecipeInfoForm
-          v-model:recipe="currentRecipe"
-        />
+        <RecipeInfoForm v-model:recipe="currentRecipe" />
 
-        <RecipeIngredientsForm
-          v-model:ingredients="currentRecipe.ingredients"
-        />
+        <RecipeIngredientsForm v-model:ingredients="currentRecipe.ingredients" />
 
-        <RecipeStepsForm
-          v-model:steps="currentRecipe.steps"
-        />
+        <RecipeStepsForm v-model:steps="currentRecipe.steps" />
       </section>
 
       <section class="editor-preview">
-        <RecipePreview
-          :recipe="currentRecipe"
-        />
+        <RecipePreview :recipe="currentRecipe" />
       </section>
     </div>
   </main>

@@ -31,6 +31,11 @@ const emit = defineEmits<{
       <p v-if="recipe.description" class="recipe-card-description">
         {{ recipe.description }}
       </p>
+      <div v-if="recipe.tags?.length" class="recipe-card-tags">
+        <span v-for="tag in recipe.tags" :key="tag">
+          {{ tag }}
+        </span>
+      </div>
 
       <div class="recipe-card-meta">
         <span v-if="recipe.servings">

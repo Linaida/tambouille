@@ -299,3 +299,63 @@
     position: static;
   }
 }
+
+.recipe-tags-field {
+  margin-bottom: 18px;
+}
+
+.recipe-tags-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5f574f;
+}
+
+.recipe-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recipe-tag-option {
+  border: 1px solid #ddd5cc;
+  background: white;
+  color: #2d2a26;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.recipe-tag-option.is-selected {
+  border-color: #2d2a26;
+  background: #2d2a26;
+  color: white;
+}
+
+.recipe-custom-tag-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.recipe-custom-tag-row input {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #ddd5cc;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: #2d2a26;
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .recipe-custom-tag-row {
+    flex-direction: column;
+  }
+
+  .recipe-custom-tag-row button {
+    width: 100%;
+  }
+}

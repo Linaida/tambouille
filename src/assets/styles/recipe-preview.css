@@ -132,3 +132,18 @@
     font-size: 30px;
   }
 }
+
+.recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 28px;
+}
+
+.recipe-tags span {
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #fff4d8;
+  color: #7a5200;
+  font-size: 13px;
+}

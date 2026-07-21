@@ -15,10 +15,6 @@
 - tri par date / titre
 
 
-## Ajouter des catégories ou tags
-
-- Exemple : Dessert, Plat, Bébé, Batch cooking ...
-
 ## Dupliquer une recette
 
 - Reprendre l'ensemble de la recette
@@ -32,9 +28,6 @@
 - proposer “remplacer” ou “dupliquer”
 
 ## Finitions UX
-- message “Recette enregistrée”
-- message “Import terminé”
-- bouton “Retour” dans l’éditeur
 - état vide plus joli
 - meilleure confirmation de suppression
 - bouton “Annuler” explicite
@@ -70,3 +63,12 @@
 
 ##  Recherche dans les recettes
 - Filtrer sur : titre, description, ingrédients
+
+## Ajouter des catégories ou tags
+
+- Exemple : Dessert, Plat, Bébé, Batch cooking ...
+
+## Finitions UX
+- message “Recette enregistrée”
+- message “Import terminé”
+- bouton “Retour” dans l’éditeur

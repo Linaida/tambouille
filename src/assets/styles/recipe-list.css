@@ -204,3 +204,60 @@
     width: 100%;
   }
 }
+
+.recipe-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.recipe-card-tags span {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #fff4d8;
+  color: #7a5200;
+  font-size: 12px;
+}
+
+.recipes-page-header-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.recipes-tag-filter {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+}
+
+.recipes-tag-filter-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5f574f;
+}
+
+.recipes-tag-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recipes-tag-filter-option {
+  border: 1px solid #ddd5cc;
+  background: white;
+  color: #2d2a26;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.recipes-tag-filter-option.is-selected {
+  border-color: #2d2a26;
+  background: #2d2a26;
+  color: white;
+}

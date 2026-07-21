@@ -24,4 +24,5 @@ export type Recipe = {
   steps: RecipeStep[]
   createdAt: string
   updatedAt: string
+  tags?: string[]
 }

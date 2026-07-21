@@ -130,6 +130,28 @@
     page-break-inside: avoid;
     break-inside: avoid;
   }
+
+  .recipe-tags {
+    gap: 2mm;
+    margin: 3mm 0 6mm;
+  }
+
+  .recipe-tags span {
+    background: none;
+    border: 1px solid #ddd;
+    color: black;
+    padding: 1.5mm 2.5mm;
+    font-size: 9pt;
+  }
+
+  body.print-compact .recipe-tags {
+    margin: 2mm 0 4mm;
+  }
+
+  body.print-compact .recipe-tags span {
+    padding: 1mm 2mm;
+    font-size: 8.5pt;
+  }
 }
 
 body.print-compact .recipe-header {

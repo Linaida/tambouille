@@ -20,14 +20,14 @@ defineProps<{
         </p>
 
         <RecipeMeta :recipe="recipe" />
+        <div v-if="recipe.tags?.length" class="recipe-tags">
+          <span v-for="tag in recipe.tags" :key="tag">
+            {{ tag }}
+          </span>
+        </div>
       </div>
 
-      <img
-        v-if="recipe.coverImage"
-        :src="recipe.coverImage"
-        :alt="recipe.title"
-        class="cover-image"
-      />
+      <img v-if="recipe.coverImage" :src="recipe.coverImage" :alt="recipe.title" class="cover-image" />
     </header>
 
     <IngredientList :ingredients="recipe.ingredients" />

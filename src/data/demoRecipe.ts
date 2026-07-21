@@ -11,6 +11,7 @@ export const demoRecipe: Recipe = {
   servings: 6,
   preparationTime: '15 min',
   cookingTime: '20 min',
+  tags: ['Dessert', 'Rapide'],
   ingredients: [
     {
       id: '1',

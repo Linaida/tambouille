@@ -19,5 +19,6 @@ export const createEmptyRecipe = (): Recipe => {
 
     createdAt: now,
     updatedAt: now,
+    tags: []
   }
 }
