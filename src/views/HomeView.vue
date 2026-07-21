@@ -6,6 +6,8 @@ import { useRouter } from 'vue-router'
 import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { useNotificationStore } from '@/stores/notificationStore'
+import { useConfirmDialogStore } from '@/stores/confirmDialogStore'
+
 import type { Recipe } from '@/types/Recipe'
 
 import {
@@ -17,6 +19,7 @@ const router = useRouter()
 
 const recipeStore = useRecipeStore()
 const notificationStore = useNotificationStore()
+const confirmDialogStore = useConfirmDialogStore()
 
 const {
   recipes,
@@ -73,9 +76,13 @@ const duplicateRecipe = async (recipeId: string): Promise<void> => {
 const removeRecipe = async (recipe: Recipe) => {
   const recipeTitle = recipe.title || 'cette recette'
 
-  const confirmed = window.confirm(
-    `Voulez-vous vraiment supprimer « ${recipeTitle} » ?`,
-  )
+  const confirmed = await confirmDialogStore.showConfirm({
+    title: 'Supprimer la recette',
+    message: `Voulez-vous vraiment supprimer « ${recipeTitle} » ? Cette action est définitive.`,
+    confirmLabel: 'Supprimer',
+    cancelLabel: 'Annuler',
+    variant: 'danger',
+  })
 
   if (!confirmed) {
     return
@@ -176,10 +183,12 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
   try {
     const recipesToImport = await readRecipesBackupFile(file)
 
-    const confirmed = window.confirm(
-      `Importer ${recipesToImport.length} recette(s) ?`,
-    )
-
+    const confirmed = await confirmDialogStore.showConfirm({
+      title: 'Importer des recettes',
+      message: `Voulez-vous importer ${recipesToImport.length} recette(s) depuis ce fichier JSON ? Les doublons seront ignorés.`,
+      confirmLabel: 'Importer',
+      cancelLabel: 'Annuler',
+    })
     if (!confirmed) {
       return
     }

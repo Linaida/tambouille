@@ -21,11 +21,13 @@ import RecipeStepsForm from '@/components/editor/RecipeStepsForm.vue'
 
 import { useRecipeStore } from '@/stores/recipeStore'
 import { useNotificationStore } from '@/stores/notificationStore'
+import { useConfirmDialogStore } from '@/stores/confirmDialogStore'
 
 import type { Recipe } from '@/types/Recipe'
 
 const recipeStore = useRecipeStore()
 const notificationStore = useNotificationStore()
+const confirmDialogStore = useConfirmDialogStore()
 
 const {
   currentRecipe,
@@ -55,14 +57,18 @@ const hasUnsavedChanges = computed(() => {
   return serializeRecipe(currentRecipe.value) !== initialRecipeSnapshot.value
 })
 
-const confirmLoseChanges = (): boolean => {
+const confirmLoseChanges = async (): Promise<boolean> => {
   if (!hasUnsavedChanges.value || isLeavingAfterSave.value) {
     return true
   }
 
-  return window.confirm(
-    'Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page ?',
-  )
+  return confirmDialogStore.showConfirm({
+    title: 'Modifications non enregistrées',
+    message: 'Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page sans les sauvegarder ?',
+    confirmLabel: 'Quitter sans enregistrer',
+    cancelLabel: 'Continuer à modifier',
+    variant: 'danger',
+  })
 }
 
 const validationError = ref<string | null>(null)
