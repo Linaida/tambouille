@@ -119,10 +119,6 @@
   width: 100%;
 }
 
-.recipe-card-actions .delete-button {
-  grid-column: 1 / -1;
-}
-
 .recipes-empty {
   padding: 60px 24px;
   text-align: center;

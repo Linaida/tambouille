@@ -8,6 +8,7 @@ defineProps<{
 const emit = defineEmits<{
   view: [recipeId: string]
   edit: [recipeId: string]
+  duplicate: [recipeId: string]
   remove: [recipe: Recipe]
 }>()
 </script>
@@ -53,7 +54,9 @@ const emit = defineEmits<{
       <button type="button" class="secondary-button" @click="emit('edit', recipe.id)">
         Modifier
       </button>
-
+      <button type="button" class="secondary-button" @click="emit('duplicate', recipe.id)">
+        Dupliquer
+      </button>
       <button type="button" class="delete-button" @click="emit('remove', recipe)">
         Supprimer
       </button>

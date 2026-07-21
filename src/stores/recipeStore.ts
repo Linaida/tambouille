@@ -19,6 +19,10 @@ const sortRecipes = (recipes: Recipe[]): Recipe[] => {
   })
 }
 
+const cloneRecipe = (recipe: Recipe): Recipe => {
+  return JSON.parse(JSON.stringify(recipe)) as Recipe
+}
+
 export const useRecipeStore = defineStore('recipe', () => {
   const recipes = ref<Recipe[]>([])
 
@@ -169,6 +173,60 @@ export const useRecipeStore = defineStore('recipe', () => {
     }
   }
 
+  const duplicateRecipe = async (
+  recipeId: string,
+): Promise<Recipe | null> => {
+  isLoading.value = true
+  error.value = null
+
+  try {
+    const recipeToDuplicate =
+      recipes.value.find((recipe) => recipe.id === recipeId)
+      ?? await recipeRepository.getById(recipeId)
+
+    if (!recipeToDuplicate) {
+      error.value = 'La recette à dupliquer est introuvable.'
+      return null
+    }
+
+    const now = new Date().toISOString()
+
+    const duplicatedRecipe: Recipe = {
+      ...cloneRecipe(recipeToDuplicate),
+      id: crypto.randomUUID(),
+      title: `${recipeToDuplicate.title || 'Recette'} - copie`,
+      createdAt: now,
+      updatedAt: now,
+      ingredients: recipeToDuplicate.ingredients.map((ingredient) => ({
+        ...cloneRecipe(ingredient),
+        id: crypto.randomUUID(),
+      })),
+      steps: recipeToDuplicate.steps.map((step) => ({
+        ...cloneRecipe(step),
+        id: crypto.randomUUID(),
+      })),
+    }
+
+    const savedRecipe = await recipeRepository.save(duplicatedRecipe)
+
+    recipes.value.unshift(savedRecipe)
+    recipes.value = sortRecipes(recipes.value)
+
+    currentRecipe.value = cloneRecipe(savedRecipe)
+
+    return savedRecipe
+  } catch (exception) {
+    error.value = getErrorMessage(
+      exception,
+      'Impossible de dupliquer la recette.',
+    )
+
+    return null
+  } finally {
+    isLoading.value = false
+  }
+}
+
   return {
     recipes,
     currentRecipe,
@@ -180,6 +238,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     loadRecipe,
     saveCurrentRecipe,
     deleteRecipe,
+    duplicateRecipe,
     clearCurrentRecipe,
 
     exportRecipes,

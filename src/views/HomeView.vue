@@ -51,6 +51,21 @@ const editRecipe = (recipeId: string) => {
   })
 }
 
+const duplicateRecipe = async (recipeId: string): Promise<void> => {
+  const duplicatedRecipe = await recipeStore.duplicateRecipe(recipeId)
+
+  if (!duplicatedRecipe) {
+    return
+  }
+
+  await router.push({
+    name: 'recipe-edit',
+    params: {
+      id: duplicatedRecipe.id,
+    },
+  })
+}
+
 const removeRecipe = async (recipe: Recipe) => {
   const recipeTitle = recipe.title || 'cette recette'
 
@@ -228,6 +243,7 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
         @view="viewRecipe"
         @edit="editRecipe"
         @remove="removeRecipe"
+        @duplicate="duplicateRecipe"
       />
     </section>
   </main>
