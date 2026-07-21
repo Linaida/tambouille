@@ -152,7 +152,11 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
     </section>
 
     <section v-else class="recipes-grid">
-      <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" @view="viewRecipe" @edit="editRecipe"
+      <RecipeCard v-for="recipe in recipes"
+        :key="recipe.id"
+        :recipe="recipe"
+        @view="viewRecipe"
+        @edit="editRecipe"
         @remove="removeRecipe" />
     </section>
   </main>
