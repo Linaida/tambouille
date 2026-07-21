@@ -257,11 +257,11 @@ export const useRecipeStore = defineStore('recipe', () => {
         createdAt: now,
         updatedAt: now,
         ingredients: recipeToDuplicate.ingredients.map((ingredient) => ({
-          ...cloneRecipe(ingredient),
+          ...ingredient,
           id: crypto.randomUUID(),
         })),
         steps: recipeToDuplicate.steps.map((step) => ({
-          ...cloneRecipe(step),
+          ...step,
           id: crypto.randomUUID(),
         })),
       }
