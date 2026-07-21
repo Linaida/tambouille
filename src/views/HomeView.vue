@@ -184,9 +184,31 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
       return
     }
 
-    await recipeStore.importRecipes(recipesToImport)
+    const importResult = await recipeStore.importRecipes(recipesToImport)
+
+    if (!importResult) {
+      return
+    }
+
+    if (importResult.importedCount === 0) {
+      notificationStore.showNotification(
+        `Import terminé : aucune nouvelle recette. ${importResult.ignoredCount} doublon(s) ignoré(s).`,
+        'info',
+      )
+
+      return
+    }
+
+    if (importResult.ignoredCount > 0) {
+      notificationStore.showNotification(
+        `Import terminé : ${importResult.importedCount} recette(s) importée(s), ${importResult.ignoredCount} doublon(s) ignoré(s).`,
+      )
+
+      return
+    }
+
     notificationStore.showNotification(
-      `Import terminé : ${recipesToImport.length} recette(s) importée(s) !`,
+      `Import terminé : ${importResult.importedCount} recette(s) importée(s).`,
     )
   } catch {
     notificationStore.showNotification('Le fichier sélectionné est invalide.', 'error')
@@ -296,4 +318,3 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
     </section>
   </main>
 </template>
-

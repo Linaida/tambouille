@@ -5,6 +5,37 @@ import type { Recipe } from '@/types/Recipe'
 import { createEmptyRecipe } from '@/factories/recipeFactory'
 import { recipeRepository } from '@/repositories/recipeRepository'
 
+export type ImportRecipesResult = {
+  importedCount: number
+  ignoredCount: number
+}
+const normalizeTextForComparison = (value: string | undefined): string => {
+  return (value ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+}
+
+const createRecipeSignature = (recipe: Recipe): string => {
+  const ingredients = recipe.ingredients.map((ingredient) => ({
+    name: normalizeTextForComparison(ingredient.name),
+    quantity: normalizeTextForComparison(ingredient.quantity),
+  }))
+
+  const steps = recipe.steps.map((step) => ({
+    title: normalizeTextForComparison(step.title),
+    description: normalizeTextForComparison(step.description),
+  }))
+
+  return JSON.stringify({
+    title: normalizeTextForComparison(recipe.title),
+    description: normalizeTextForComparison(recipe.description),
+    ingredients,
+    steps,
+  })
+}
+
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (error instanceof Error) {
     return error.message
@@ -155,77 +186,102 @@ export const useRecipeStore = defineStore('recipe', () => {
     return recipes.value
   }
 
-  const importRecipes = async (recipesToImport: Recipe[]): Promise<boolean> => {
+  const importRecipes = async (recipesToImport: Recipe[]): Promise<ImportRecipesResult | null> => {
     isLoading.value = true
     error.value = null
 
     try {
-      await recipeRepository.saveMany(recipesToImport)
+      const existingRecipes = await recipeRepository.getAll()
+
+      const existingRecipeIds = new Set(existingRecipes.map((recipe) => recipe.id))
+
+      const existingRecipeSignatures = new Set(existingRecipes.map(createRecipeSignature))
+
+      const recipesToSave: Recipe[] = []
+
+      for (const recipeToImport of recipesToImport) {
+        const recipeSignature = createRecipeSignature(recipeToImport)
+
+        const alreadyExists =
+          existingRecipeIds.has(recipeToImport.id) || existingRecipeSignatures.has(recipeSignature)
+
+        if (alreadyExists) {
+          continue
+        }
+
+        recipesToSave.push(recipeToImport)
+
+        existingRecipeIds.add(recipeToImport.id)
+        existingRecipeSignatures.add(recipeSignature)
+      }
+
+      if (recipesToSave.length > 0) {
+        await recipeRepository.saveMany(recipesToSave)
+      }
+
       await loadRecipes()
 
-      return true
+      return {
+        importedCount: recipesToSave.length,
+        ignoredCount: recipesToImport.length - recipesToSave.length,
+      }
     } catch (exception) {
       error.value = getErrorMessage(exception, 'Impossible d’importer les recettes.')
 
-      return false
+      return null
     } finally {
       isLoading.value = false
     }
   }
 
-  const duplicateRecipe = async (
-  recipeId: string,
-): Promise<Recipe | null> => {
-  isLoading.value = true
-  error.value = null
+  const duplicateRecipe = async (recipeId: string): Promise<Recipe | null> => {
+    isLoading.value = true
+    error.value = null
 
-  try {
-    const recipeToDuplicate =
-      recipes.value.find((recipe) => recipe.id === recipeId)
-      ?? await recipeRepository.getById(recipeId)
+    try {
+      const recipeToDuplicate =
+        recipes.value.find((recipe) => recipe.id === recipeId) ??
+        (await recipeRepository.getById(recipeId))
 
-    if (!recipeToDuplicate) {
-      error.value = 'La recette à dupliquer est introuvable.'
+      if (!recipeToDuplicate) {
+        error.value = 'La recette à dupliquer est introuvable.'
+        return null
+      }
+
+      const now = new Date().toISOString()
+
+      const duplicatedRecipe: Recipe = {
+        ...cloneRecipe(recipeToDuplicate),
+        id: crypto.randomUUID(),
+        title: `${recipeToDuplicate.title || 'Recette'} - copie`,
+        createdAt: now,
+        updatedAt: now,
+        ingredients: recipeToDuplicate.ingredients.map((ingredient) => ({
+          ...cloneRecipe(ingredient),
+          id: crypto.randomUUID(),
+        })),
+        steps: recipeToDuplicate.steps.map((step) => ({
+          ...cloneRecipe(step),
+          id: crypto.randomUUID(),
+        })),
+      }
+
+      const savedRecipe = await recipeRepository.save(duplicatedRecipe)
+
+      recipes.value.unshift(savedRecipe)
+      recipes.value = sortRecipes(recipes.value)
+
+      currentRecipe.value = cloneRecipe(savedRecipe)
+
+      return savedRecipe
+    } catch (exception) {
+      error.value = getErrorMessage(exception, 'Impossible de dupliquer la recette.')
+
       return null
+    } finally {
+      isLoading.value = false
     }
-
-    const now = new Date().toISOString()
-
-    const duplicatedRecipe: Recipe = {
-      ...cloneRecipe(recipeToDuplicate),
-      id: crypto.randomUUID(),
-      title: `${recipeToDuplicate.title || 'Recette'} - copie`,
-      createdAt: now,
-      updatedAt: now,
-      ingredients: recipeToDuplicate.ingredients.map((ingredient) => ({
-        ...cloneRecipe(ingredient),
-        id: crypto.randomUUID(),
-      })),
-      steps: recipeToDuplicate.steps.map((step) => ({
-        ...cloneRecipe(step),
-        id: crypto.randomUUID(),
-      })),
-    }
-
-    const savedRecipe = await recipeRepository.save(duplicatedRecipe)
-
-    recipes.value.unshift(savedRecipe)
-    recipes.value = sortRecipes(recipes.value)
-
-    currentRecipe.value = cloneRecipe(savedRecipe)
-
-    return savedRecipe
-  } catch (exception) {
-    error.value = getErrorMessage(
-      exception,
-      'Impossible de dupliquer la recette.',
-    )
-
-    return null
-  } finally {
-    isLoading.value = false
   }
-}
 
   return {
     recipes,
