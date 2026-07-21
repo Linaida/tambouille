@@ -131,6 +131,16 @@ const initializeEditor = async (): Promise<void> => {
 }
 
 watch(
+  () => route.fullPath,
+  () => {
+    void initializeEditor()
+  },
+  {
+    immediate: true,
+  },
+)
+
+watch(
   () => currentRecipe.value?.title,
   () => {
     if (
@@ -251,43 +261,81 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<template v-if="currentRecipe">
+<template>
   <main class="editor-page">
     <div class="toolbar no-print">
-      <button type="button" class="secondary-button" :disabled="isLoading" @click="resetRecipe">
+      <button
+        type="button"
+        class="secondary-button"
+        :disabled="isLoading || !currentRecipe"
+        @click="router.push({ name: 'home' })"
+      >
+        Retour à l’accueil
+      </button>
+      <button
+        type="button"
+        class="secondary-button"
+        :disabled="isLoading || !currentRecipe"
+        @click="resetRecipe"
+      >
         Annuler les modifications
       </button>
 
-      <button type="button" :disabled="isLoading" @click="validateRecipe">
+      <button
+        type="button"
+        :disabled="isLoading || !currentRecipe"
+        @click="validateRecipe"
+      >
         {{ isLoading ? 'Enregistrement...' : 'Valider' }}
       </button>
     </div>
-    <p v-if="hasUnsavedChanges" class="editor-unsaved-warning no-print">
+
+    <p
+      v-if="hasUnsavedChanges"
+      class="editor-unsaved-warning no-print"
+    >
       Modifications non enregistrées
     </p>
-    <p v-if="isLoading">
+
+    <p
+      v-if="isLoading && !currentRecipe"
+      class="recipes-loading"
+    >
       Chargement...
     </p>
 
-    <p v-if="displayedError" class="form-error">
+    <p
+      v-if="displayedError"
+      class="form-error"
+    >
       {{ displayedError }}
     </p>
-    <template v-if="currentRecipe">
-      <div class="editor-layout">
-        <section class="editor-panel no-print">
-          <h1>Modifier la recette</h1>
 
-          <RecipeInfoForm v-model:recipe="currentRecipe" />
+    <div
+      v-if="currentRecipe"
+      class="editor-layout"
+    >
+      <section class="editor-panel no-print">
+        <h1>Modifier la recette</h1>
 
-          <RecipeIngredientsForm v-model:ingredients="currentRecipe.ingredients" />
+        <RecipeInfoForm
+          v-model:recipe="currentRecipe"
+        />
 
-          <RecipeStepsForm v-model:steps="currentRecipe.steps" />
-        </section>
+        <RecipeIngredientsForm
+          v-model:ingredients="currentRecipe.ingredients"
+        />
 
-        <section class="editor-preview">
-          <RecipePreview :recipe="currentRecipe" />
-        </section>
-      </div>
-    </template>
+        <RecipeStepsForm
+          v-model:steps="currentRecipe.steps"
+        />
+      </section>
+
+      <section class="editor-preview">
+        <RecipePreview
+          :recipe="currentRecipe"
+        />
+      </section>
+    </div>
   </main>
 </template>

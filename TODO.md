@@ -11,10 +11,9 @@
 
 - exporter une recette en HTML
 
-##  Recherche dans les recettes
-
+## Trier les recettes
 - tri par date / titre
-- Filtrer sur : titre, description, ingrédients
+
 
 ## Ajouter des catégories ou tags
 
@@ -68,3 +67,6 @@
 - détecter les modifications non enregistrées
 - afficher une confirmation si l’utilisateur quitte la page
 - ajouter éventuellement un bouton “Annuler”
+
+##  Recherche dans les recettes
+- Filtrer sur : titre, description, ingrédients

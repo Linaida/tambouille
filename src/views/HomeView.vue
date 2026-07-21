@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
@@ -25,6 +25,7 @@ const {
 onMounted(() => {
   void recipeStore.loadRecipes()
 })
+
 
 const createRecipe = () => {
   router.push({
@@ -65,6 +66,44 @@ const removeRecipe = async (recipe: Recipe) => {
 }
 
 const backupInput = ref<HTMLInputElement | null>(null)
+
+const searchQuery = ref('')
+
+const normalizeSearchText = (value: string): string => {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+}
+
+const normalizedSearchQuery = computed(() => {
+  return normalizeSearchText(searchQuery.value)
+})
+
+const filteredRecipes = computed(() => {
+  if (!normalizedSearchQuery.value) {
+    return recipes.value
+  }
+
+  return recipes.value.filter((recipe) => {
+    const searchableText = [
+      recipe.title,
+      recipe.description,
+      ...recipe.ingredients.map((ingredient) => ingredient.name),
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    return normalizeSearchText(searchableText).includes(
+      normalizedSearchQuery.value,
+    )
+  })
+})
+
+const clearSearch = (): void => {
+  searchQuery.value = ''
+}
 
 const exportAllRecipes = async (): Promise<void> => {
   const recipesToExport = await recipeStore.exportRecipes()
@@ -131,6 +170,24 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
         @change="importRecipesBackup" />
     </header>
 
+    <section v-if="recipes.length > 0" class="recipes-search no-print">
+      <label for="recipe-search">
+        Rechercher une recette
+      </label>
+
+      <div class="recipes-search-row">
+        <input id="recipe-search" v-model="searchQuery" type="search" placeholder="Ex : chocolat, tomate, farine..." />
+
+        <button v-if="searchQuery" type="button" class="secondary-button" @click="clearSearch">
+          Effacer
+        </button>
+      </div>
+
+      <p v-if="normalizedSearchQuery" class="recipes-search-results">
+        {{ filteredRecipes.length }} résultat(s) trouvé(s)
+      </p>
+    </section>
+
     <p v-if="error" class="form-error">
       {{ error }}
     </p>
@@ -151,13 +208,27 @@ const importRecipesBackup = async (event: Event): Promise<void> => {
       </button>
     </section>
 
+    <section v-else-if="filteredRecipes.length === 0" class="recipes-empty">
+      <h2>Aucun résultat</h2>
+
+      <p>
+        Aucune recette ne correspond à votre recherche.
+      </p>
+
+      <button type="button" class="secondary-button" @click="clearSearch">
+        Effacer la recherche
+      </button>
+    </section>
+
     <section v-else class="recipes-grid">
-      <RecipeCard v-for="recipe in recipes"
+      <RecipeCard
+        v-for="recipe in filteredRecipes"
         :key="recipe.id"
         :recipe="recipe"
         @view="viewRecipe"
         @edit="editRecipe"
-        @remove="removeRecipe" />
+        @remove="removeRecipe"
+      />
     </section>
   </main>
 </template>
