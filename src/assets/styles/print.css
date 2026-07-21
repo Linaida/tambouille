@@ -1,6 +1,22 @@
 @media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
   body {
     background: white;
+    color: black;
+    font-size: 11pt;
+  }
+
+  .no-print,
+  .toolbar,
+  .recipe-card-actions,
+  button,
+  .secondary-button,
+  .delete-button {
+    display: none !important;
   }
 
   .page {
@@ -13,14 +29,168 @@
     box-shadow: none;
     border-radius: 0;
     padding: 0;
+    background: white;
   }
 
-  .no-print,
-  .toolbar,
-  .recipe-card-actions,
-  button,
-  .secondary-button,
-  .delete-button {
-    display: none !important;
+  .recipe-header {
+    display: grid;
+    grid-template-columns: 1fr 38mm;
+    gap: 10mm;
+    align-items: start;
+    margin-bottom: 8mm;
+    page-break-inside: avoid;
   }
+
+  .recipe-header h1 {
+    margin: 0 0 4mm;
+    font-size: 22pt;
+    line-height: 1.1;
+  }
+
+  .recipe-description {
+    max-width: none;
+    font-size: 11pt;
+    line-height: 1.35;
+    color: black;
+  }
+
+  .recipe-meta {
+    gap: 4mm;
+    margin-top: 5mm;
+    font-size: 9.5pt;
+    color: black;
+  }
+
+  .recipe-meta span {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 2mm 3mm;
+  }
+
+  .cover-image {
+    width: 38mm;
+    height: 30mm;
+    object-fit: cover;
+    border-radius: 3mm;
+  }
+
+  .recipe-section {
+    margin-top: 8mm;
+  }
+
+  .recipe-section h2 {
+    margin: 0 0 4mm;
+    padding-bottom: 2mm;
+    font-size: 15pt;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .ingredients-list li {
+    grid-template-columns: 8mm 28mm 1fr;
+    gap: 4mm;
+    padding: 2mm 0;
+    page-break-inside: avoid;
+  }
+
+  .ingredient-icon {
+    min-width: 8mm;
+    min-height: 8mm;
+    font-size: 16pt;
+  }
+
+  .ingredient-quantity {
+    font-weight: bold;
+  }
+
+  .steps-list {
+    padding-left: 7mm;
+  }
+
+  .step-item {
+    margin-bottom: 5mm;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .step-item h3 {
+    margin: 0 0 2mm;
+    font-size: 12pt;
+  }
+
+  .step-item p {
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .step-image {
+    max-width: 70mm;
+    max-height: 45mm;
+    margin-top: 3mm;
+    object-fit: contain;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+body.print-compact .recipe-header {
+  display: block;
+  margin-bottom: 6mm;
+}
+
+body.print-compact .cover-image,
+body.print-compact .step-image,
+body.print-compact .ingredient-icon {
+  display: none !important;
+}
+
+body.print-compact .recipe-header h1 {
+  margin-bottom: 2mm;
+  font-size: 20pt;
+}
+
+body.print-compact .recipe-description {
+  font-size: 10pt;
+}
+
+body.print-compact .recipe-meta {
+  margin-top: 3mm;
+  gap: 2mm;
+  font-size: 9pt;
+}
+
+body.print-compact .recipe-meta span {
+  padding: 1.5mm 2.5mm;
+}
+
+body.print-compact .recipe-section {
+  margin-top: 6mm;
+}
+
+body.print-compact .recipe-section h2 {
+  margin-bottom: 3mm;
+  font-size: 13pt;
+}
+
+body.print-compact .ingredients-list li {
+  grid-template-columns: 28mm 1fr;
+  gap: 4mm;
+  padding: 1.5mm 0;
+}
+
+body.print-compact .steps-list {
+  padding-left: 6mm;
+}
+
+body.print-compact .step-item {
+  margin-bottom: 3.5mm;
+}
+
+body.print-compact .step-item h3 {
+  margin-bottom: 1mm;
+  font-size: 11pt;
+}
+
+body.print-compact .step-item p {
+  font-size: 10pt;
+  line-height: 1.3;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { onBeforeUnmount, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -60,9 +60,32 @@ const editRecipe = (): void => {
   })
 }
 
+const clearPrintMode = (): void => {
+  document.body.classList.remove('print-compact')
+}
+
 const printRecipe = (): void => {
+  clearPrintMode()
   window.print()
 }
+
+const printCompactRecipe = (): void => {
+  document.body.classList.add('print-compact')
+
+  window.addEventListener(
+    'afterprint',
+    clearPrintMode,
+    {
+      once: true,
+    },
+  )
+
+  window.print()
+}
+
+onBeforeUnmount(() => {
+  clearPrintMode()
+})
 
 watch(
   () => route.params.id,
@@ -78,49 +101,30 @@ watch(
 <template>
   <main class="page">
     <div class="toolbar no-print">
-      <button
-        type="button"
-        class="secondary-button"
-        @click="goBack"
-      >
+      <button type="button" class="secondary-button" @click="goBack">
         Retour aux recettes
       </button>
 
-      <button
-        type="button"
-        class="secondary-button"
-        :disabled="!currentRecipe"
-        @click="editRecipe"
-      >
+      <button type="button" class="secondary-button" :disabled="!currentRecipe" @click="editRecipe">
         Modifier
       </button>
 
-      <button
-        type="button"
-        :disabled="!currentRecipe"
-        @click="printRecipe"
-      >
+      <button type="button" :disabled="!currentRecipe" @click="printRecipe">
         Imprimer
+      </button>
+      <button type="button" :disabled="!currentRecipe" @click="printCompactRecipe">
+        Imprimer sans images
       </button>
     </div>
 
-    <p
-      v-if="isLoading"
-      class="recipes-loading"
-    >
+    <p v-if="isLoading" class="recipes-loading">
       Chargement de la recette...
     </p>
 
-    <p
-      v-else-if="error"
-      class="form-error"
-    >
+    <p v-else-if="error" class="form-error">
       {{ error }}
     </p>
 
-    <RecipePreview
-      v-else-if="currentRecipe"
-      :recipe="currentRecipe"
-    />
+    <RecipePreview v-else-if="currentRecipe" :recipe="currentRecipe" />
   </main>
 </template>
