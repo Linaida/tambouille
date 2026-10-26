@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "exportedAt": "2026-07-21T08:05:54.466Z",
+  "recipes": [
+    {
+      "id": "7aea09e7-d2b9-414b-a013-03ee98ef63ff",
+      "title": "Lasagnes bolognaise à congeler",
+      "description": "Des lasagnes maison préparées en barquettes, idéales à congeler puis à réchauffer au four pour un repas prêt d'avance.",
+      "preparationTime": "25 min",
+      "cookingTime": "30 à 40 min après décongélation",
+      "ingredients": [
+        {
+          "id": "0524ead8-9f53-4ea1-a86a-0288dad0dedf",
+          "name": "sauce bolognaise",
+          "quantity": "environ 800 g",
+          "icon": "twemoji:pot-of-food"
+        },
+        {
+          "id": "80a1c2c4-69e8-4fb0-80c3-9d361f3e5cb2",
+          "name": "pâtes à lasagnes",
+          "quantity": "12 plaques environ",
+          "icon": "twemoji:flatbread"
+        },
+        {
+          "id": "c99f17ab-2d4d-4a37-8732-08bd88d9fc2a",
+          "name": "sauce béchamel",
+          "quantity": "500 ml",
+          "icon": "twemoji:glass-of-milk"
+        },
+        {
+          "id": "c6b64645-9827-4985-a11d-3e0e41596770",
+          "name": "fromage râpé",
+          "quantity": "150 g",
+          "icon": "twemoji:cheese-wedge"
+        },
+        {
+          "id": "a6ffac7e-e19f-468f-beb0-18a324490676",
+          "name": "beurre",
+          "quantity": "un peu pour les barquettes",
+          "icon": "twemoji:butter"
+        }
+      ],
+      "steps": [
+        {
+          "id": "56a40976-ed1a-4de0-a0ce-942afac4756b",
+          "title": "Préparer les barquettes",
+          "description": "Beurrer légèrement les barquettes en aluminium pour éviter que les lasagnes accrochent à la cuisson."
+        },
+        {
+          "id": "7a3d68c0-c13b-4e79-9e95-9344123fc0d7",
+          "title": "Mettre une première couche de sauce",
+          "description": "Déposer une fine couche de sauce bolognaise au fond de chaque barquette."
+        },
+        {
+          "id": "bb65a025-67cc-481f-a28d-a219b3822dc4",
+          "title": "Ajouter les pâtes",
+          "description": "Placer une couche de plaques à lasagnes par-dessus la sauce. Les découper si nécessaire pour les adapter à la taille des barquettes."
+        },
+        {
+          "id": "4ff706a7-0184-43fd-a75e-3b87ecc79d55",
+          "title": "Ajouter la garniture",
+          "description": "Recouvrir les pâtes avec de la sauce bolognaise, un peu de béchamel et une petite poignée de fromage râpé."
+        },
+        {
+          "id": "60527926-7d50-4e93-b87b-d22206b3e0c6",
+          "title": "Monter les couches",
+          "description": "Répéter les couches dans cet ordre : pâtes, bolognaise, béchamel, fromage. Faire 2 à 3 étages selon la hauteur des barquettes."
+        },
+        {
+          "id": "ce2d90a4-72ad-4e86-bb46-e9c18f6210a7",
+          "title": "Terminer les lasagnes",
+          "description": "Finir par une couche de pâtes bien recouverte de béchamel, puis ajouter généreusement du fromage râpé sur le dessus."
+        },
+        {
+          "id": "08718f60-e2c2-45d5-b347-5653480b946f",
+          "title": "Fermer et étiqueter",
+          "description": "Fermer les barquettes avec leur couvercle ou du papier aluminium. Noter le nom du plat, la date et les instructions de cuisson."
+        },
+        {
+          "id": "bd3ee3ce-f7d3-476e-8928-b26415ec5353",
+          "title": "Congeler",
+          "description": "Placer les barquettes bien à plat au congélateur. Les consommer idéalement dans les 3 mois."
+        },
+        {
+          "id": "5292072f-c18c-4cc6-a99c-89465368631d",
+          "title": "Cuire après congélation",
+          "description": "Après décongélation au réfrigérateur, cuire au four à 180°C pendant 30 à 40 minutes. Directement congelées, cuire à 180°C pendant 50 à 60 minutes en couvrant au début."
+        }
+      ],
+      "createdAt": "2026-07-17T07:27:03.413Z",
+      "updatedAt": "2026-07-17T07:59:27.740Z"
+    }
+  ]
+}
